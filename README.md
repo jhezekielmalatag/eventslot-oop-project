@@ -36,3 +36,9 @@ from data storage.
 ## Project Status
 
 Day 1 — Initial project setup.
+
+## Project Status
+
+- Day 1 — Initial project setup completed.
+- Day 2 — Event class implemented and testing. (upcoming)
+
