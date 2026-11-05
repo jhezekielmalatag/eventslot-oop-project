@@ -39,6 +39,14 @@ Day 1 — Initial project setup.
 
 ## Project Status
 
-- Day 1 — Initial project setup completed.
-- Day 2 — Event class implemented and testing. (upcoming)
+| Day | Task | Status |
+|---|---|---|
+| Day 1 | Project Setup and Environment Configuration | Completed |
+| Day 2 | Event Class Implementation and Unit Testing | Completed |
+| Day 3 | Participant Class and Input Validation | Completed |
+| Day 4 | Registration Class Implementation | Upcoming |
+
+**Current Progress:** Completed Day 3 of the project.
+
+The Event and Participant classes have been implemented and tested using Python's `unittest` framework. All 10 unit tests are passing.
 
