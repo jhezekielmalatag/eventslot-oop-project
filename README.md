@@ -44,9 +44,17 @@ Day 1 — Initial project setup.
 | Day 1 | Project Setup and Environment Configuration | Completed |
 | Day 2 | Event Class Implementation and Unit Testing | Completed |
 | Day 3 | Participant Class and Input Validation | Completed |
-| Day 4 | Registration Class Implementation | Upcoming |
+| Day 4 | Registration Class and Unit Testing | Completed |
+| Day 5 | Event Registration Logic | Upcoming |
 
-**Current Progress:** Completed Day 3 of the project.
+### Current Progress
 
-The Event and Participant classes have been implemented and tested using Python's `unittest` framework. All 10 unit tests are passing.
+Completed Day 4 of the EventSlot project.
+
+The following OOP model classes have been implemented:
+- **Event** – Manages event information and capacity.
+- **Participant** – Stores participant information and validates input.
+- **Registration** – Connects participants to events and handles registration cancellation.
+
+**Testing:** All 15 unit tests are passing using Python's `unittest` framework.
 
