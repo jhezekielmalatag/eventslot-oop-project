@@ -1,5 +1,6 @@
 import unittest
 
+from models import registration
 from models.event import Event
 from models.participant import Participant
 from services.registration_service import RegistrationService
@@ -61,6 +62,29 @@ class TestRegistrationService(unittest.TestCase):
 
         self.assertEqual(self.event.registered_count, 1)
 
+    def test_cancel_registration_releases_slot(self):
+        registration = self.service.register_participant(
+        self.participant, self.event
+         )
 
+        self.service.cancel_registration(registration)
+
+        self.assertEqual(self.event.registered_count, 0)
+        self.assertEqual(self.event.available_slots, 1)
+        self.assertEqual(registration.status, "cancelled")
+
+
+    def test_cannot_cancel_registration_twice(self):
+        registration = self.service.register_participant(
+            self.participant, self.event
+        )
+
+        self.service.cancel_registration(registration)
+
+        with self.assertRaises(ValueError):
+            self.service.cancel_registration(registration)
+
+        self.assertEqual(self.event.registered_count, 0)
+        
 if __name__ == "__main__":
     unittest.main()

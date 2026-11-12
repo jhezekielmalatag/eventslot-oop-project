@@ -35,7 +35,38 @@ class TestEvent(unittest.TestCase):
             "Python Seminar at Computer Laboratory | "
             "Available slots: 3/3"
         )
+        
+    def test_occupy_slot(self):
+        self.event.occupy_slot()
+        self.assertEqual(self.event.registered_count, 1)
 
+
+    def test_release_slot(self):
+        self.event.occupy_slot()
+        self.event.release_slot()
+        self.assertEqual(self.event.registered_count, 0)
+
+
+    def test_cannot_occupy_slot_when_full(self):
+        for _ in range(self.event.capacity):
+            self.event.occupy_slot()
+
+        with self.assertRaises(ValueError):
+            self.event.occupy_slot()
+
+
+    def test_cannot_release_slot_when_empty(self):
+        with self.assertRaises(ValueError):
+            self.event.release_slot()
+
+
+    def test_available_slots_after_occupying(self):
+        self.event.occupy_slot()
+        self.assertEqual(
+            self.event.available_slots,
+            self.event.capacity - 1
+        )
+        
 
 if __name__ == "__main__":
     unittest.main()

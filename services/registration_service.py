@@ -18,9 +18,10 @@ class RegistrationService:
             participant,
             event
         )
+        
 
         # Update the event's registered count
-        event.registered_count += 1
+        event.occupy_slot()
 
         # Save the registration
         self.registrations.append(registration)
@@ -29,3 +30,11 @@ class RegistrationService:
         self.next_registration_id += 1
 
         return registration
+    
+    def cancel_registration(self, registration):
+        if registration.status == "cancelled":
+            raise ValueError("This registration is already cancelled.")
+
+        registration.event.release_slot()
+        registration.cancel()
+

@@ -14,6 +14,19 @@ class Event:
     @property
     def is_full(self):
         return self.available_slots == 0
+    
+    def occupy_slot(self):
+        if self.is_full:
+            raise ValueError("No available slots for this event.")
+
+        self.registered_count += 1
+
+
+    def release_slot(self):
+        if self.registered_count <= 0:
+            raise ValueError("There are no occupied slots to release.")
+
+        self.registered_count -= 1
 
     def __str__(self):
         return (
