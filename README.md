@@ -42,18 +42,20 @@ from data storage.
 | Day 3 | Participant Class and Input Validation | Completed |
 | Day 4 | Registration Class and Unit Testing | Completed |
 | Day 5 | Event Registration Logic | Completed |
-| Day 6 | Slot Management | Upcoming |
+| Day 6 | Slot Management | Completed |
+| Day 7 | FIFO Waitlist Implementation | Upcoming |
 
 ### Current Progress
 
-Completed Day 5 of the EventSlot project.
+Completed Day 6 of the EventSlot project.
 
-The following OOP model classes and services have been implemented:
+- **RegistrationService** – Handles participant registration, cancellation, and event slot management.
 
-- **Event** – Manages event information, capacity, and available slots.
-- **Participant** – Stores participant information and validates input.
-- **Registration** – Connects participants to events and handles registration cancellation.
-- **RegistrationService** – Handles participant registration, checks event capacity, generates registration IDs, and tracks registration records.
+The following slot management features have also been implemented:
 
-**Testing:** All 20 unit tests are passing using Python's `unittest` framework.
-
+- Occupying available event slots.
+- Releasing occupied slots.
+- Preventing event overbooking.
+- Automatically restoring available slots after registration cancellation.
+- Preventing duplicate cancellation.
+- 27 unit tests successfully passed.
