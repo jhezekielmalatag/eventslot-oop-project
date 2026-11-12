@@ -57,5 +57,3 @@ The following OOP model classes and services have been implemented:
 
 **Testing:** All 20 unit tests are passing using Python's `unittest` framework.
 
-**Testing:** All 15 unit tests are passing using Python's `unittest` framework.
-
