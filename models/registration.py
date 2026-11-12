@@ -1,12 +1,15 @@
 class Registration:
-    def __init__(self, registration_id, participant, event):
+    def __init__(self, registration_id, participant, event, status="confirmed"):
         self.registration_id = registration_id
         self.participant = participant
         self.event = event
-        self.status = "confirmed"
+        self.status = status
 
     def cancel(self):
         self.status = "cancelled"
+        
+    def confirm(self):
+        self.status = "confirmed"
 
     def __str__(self):
         return (
