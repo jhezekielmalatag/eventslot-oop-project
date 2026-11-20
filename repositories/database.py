@@ -21,9 +21,20 @@ class Database:
                 event_id INTEGER PRIMARY KEY,
                 name TEXT NOT NULL,
                 location TEXT NOT NULL,
-                capacity INTEGER NOT NULL
+                capacity INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'active'
             )
         """)
+
+        # Add status to an existing events table if needed
+        cursor.execute("PRAGMA table_info(events)")
+        columns = [column[1] for column in cursor.fetchall()]
+
+        if "status" not in columns:
+            cursor.execute("""
+                ALTER TABLE events
+                ADD COLUMN status TEXT NOT NULL DEFAULT 'active'
+            """)
 
         # Create the participants table
         cursor.execute("""

@@ -1,11 +1,20 @@
 
 class Event:
-    def __init__(self, event_id, name, location, capacity):
+
+    def __init__(
+        self,
+        event_id,
+        name,
+        location,
+        capacity,
+        status="active"
+    ):
         self.event_id = event_id
         self.name = name
         self.location = location
         self.capacity = capacity
         self.registered_count = 0
+        self.status = status
 
     @property
     def available_slots(self):
@@ -13,14 +22,13 @@ class Event:
 
     @property
     def is_full(self):
-        return self.available_slots == 0
-    
+        return self.registered_count >= self.capacity
+
     def occupy_slot(self):
         if self.is_full:
             raise ValueError("No available slots for this event.")
 
         self.registered_count += 1
-
 
     def release_slot(self):
         if self.registered_count <= 0:

@@ -13,17 +13,19 @@ class EventRepository:
 
         cursor.execute("""
             INSERT INTO events
-            (event_id, name, location, capacity)
-            VALUES (?, ?, ?, ?)
+            (event_id, name, location, capacity, status)
+            VALUES (?, ?, ?, ?, ?)
             ON CONFLICT(event_id) DO UPDATE SET
                 name = excluded.name,
                 location = excluded.location,
-                capacity = excluded.capacity
+                capacity = excluded.capacity,
+                status = excluded.status
         """, (
             event.event_id,
             event.name,
             event.location,
-            event.capacity
+            event.capacity,
+            event.status
         ))
 
         connection.commit()
@@ -34,7 +36,7 @@ class EventRepository:
         cursor = connection.cursor()
 
         cursor.execute("""
-            SELECT event_id, name, location, capacity
+            SELECT event_id, name, location, capacity, status
             FROM events
             WHERE event_id = ?
         """, (event_id,))
@@ -49,7 +51,8 @@ class EventRepository:
             event_id=row[0],
             name=row[1],
             location=row[2],
-            capacity=row[3]
+            capacity=row[3],
+            status=row[4]
         )
 
     def get_all(self):
@@ -57,7 +60,7 @@ class EventRepository:
         cursor = connection.cursor()
 
         cursor.execute("""
-            SELECT event_id, name, location, capacity
+            SELECT event_id, name, location, capacity, status
             FROM events
             ORDER BY event_id
         """)
@@ -72,7 +75,8 @@ class EventRepository:
                 event_id=row[0],
                 name=row[1],
                 location=row[2],
-                capacity=row[3]
+                capacity=row[3],
+                status=row[4]
             )
 
             events.append(event)
@@ -87,12 +91,14 @@ class EventRepository:
             UPDATE events
             SET name = ?,
                 location = ?,
-                capacity = ?
+                capacity = ?,
+                status = ?
             WHERE event_id = ?
         """, (
             event.name,
             event.location,
             event.capacity,
+            event.status,
             event.event_id
         ))
 

@@ -20,7 +20,6 @@ class RegistrationService:
         self.participant_repository = participant_repository
         self.registration_repository = registration_repository
 
-        # Restore saved registrations when repositories are provided.
         if (
             self.event_repository
             and self.participant_repository
@@ -32,14 +31,17 @@ class RegistrationService:
         return self.waitlists.setdefault(event.event_id, deque())
 
     def _load_saved_registrations(self):
+
         saved_registrations = self.registration_repository.get_all()
 
         events = {}
 
         for saved in saved_registrations:
+
             event_id = saved.event.event_id
 
             if event_id not in events:
+
                 event = self.event_repository.get_by_id(event_id)
 
                 if event is None:
@@ -71,7 +73,26 @@ class RegistrationService:
 
     def register_participant(self, participant, event):
 
-        # Save the event and participant before registration.
+        # Check whether the event already exists in the database.
+        if self.event_repository:
+
+            saved_event = self.event_repository.get_by_id(
+                event.event_id
+            )
+
+            # Reject an event already cancelled in the database.
+            if saved_event is not None and saved_event.status == "cancelled":
+                raise ValueError(
+                    "Cannot register for a cancelled event."
+                )
+
+        # Reject a cancelled event object.
+        if event.status == "cancelled":
+            raise ValueError(
+                "Cannot register for a cancelled event."
+            )
+
+        # Save the event and participant.
         if self.event_repository and self.participant_repository:
             self.event_repository.save(event)
             self.participant_repository.save(participant)
@@ -79,6 +100,7 @@ class RegistrationService:
         waitlist = self._get_waitlist(event)
 
         if event.is_full:
+
             registration = Registration(
                 self.next_registration_id,
                 participant,
@@ -89,6 +111,7 @@ class RegistrationService:
             waitlist.append(registration)
 
         else:
+
             registration = Registration(
                 self.next_registration_id,
                 participant,
@@ -99,7 +122,6 @@ class RegistrationService:
 
         self.registrations.append(registration)
 
-        # Save registration to SQLite.
         if self.registration_repository:
             self.registration_repository.save(registration)
 
@@ -110,12 +132,15 @@ class RegistrationService:
     def cancel_registration(self, registration):
 
         if registration.status == "cancelled":
-            raise ValueError("This registration is already cancelled.")
+            raise ValueError(
+                "This registration is already cancelled."
+            )
 
         waitlist = self._get_waitlist(registration.event)
 
         # Cancel a waiting registration.
         if registration.status == "waiting":
+
             waitlist.remove(registration)
             registration.cancel()
 
@@ -133,8 +158,10 @@ class RegistrationService:
 
         # Promote the first participant in the waitlist.
         if waitlist:
+
             next_registration = waitlist.popleft()
             next_registration.confirm()
+
             registration.event.occupy_slot()
 
             if self.registration_repository:
