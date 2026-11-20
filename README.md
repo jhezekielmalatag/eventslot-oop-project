@@ -41,4 +41,65 @@ The Repository Pattern separates business logic from data storage.
 | Day 7 | FIFO Waitlist Implementation | Completed |
 | Day 8 | SQLite Database, Repository Implementation, Backend Integration, and Testing | Completed |
 | Day 9 | Admin Role and Event Management | Upcoming |
-| Day 10 | Streamlit
+| Day 10 | Streamlit Frontend Development | Upcoming |
+| Day 11 | Frontend and Backend Connection | Upcoming |
+| Days 12–14 | Integration, Testing, Documentation, and Finalization | Upcoming |
+
+## Current Progress
+
+Completed Day 8 of the EventSlot project.
+
+### RegistrationService
+
+The `RegistrationService` handles participant registration, cancellation, event slot management, and FIFO waitlist processing. It is now integrated with SQLite repositories for persistent data storage.
+
+### Implemented Features
+
+- Registering participants for available event slots.
+- Adding participants to a waitlist when an event is full.
+- Managing separate waitlists for individual events.
+- Using Python's `deque` to implement FIFO queue behavior.
+- Automatically promoting the first waiting participant when a confirmed registration is cancelled.
+- Removing cancelled waiting participants from the waitlist.
+- Releasing occupied slots after registration cancellation.
+- Preventing duplicate cancellation.
+- Maintaining accurate event capacity.
+
+### SQLite Database Integration
+
+- Created SQLite database connection and table management.
+- Implemented the `events`, `participants`, and `registrations` tables.
+- Implemented `EventRepository`.
+- Implemented `ParticipantRepository`.
+- Implemented `RegistrationRepository`.
+- Connected `RegistrationService` to the repositories.
+- Added persistent registration and cancellation records.
+- Restored registrations, occupied event slots, and FIFO waitlists after service restart.
+- Maintained registration ID sequencing after restart.
+
+### Testing
+
+**All 46 automated unit and integration tests successfully passed.**
+
+Tests cover event management, participant management, registration logic, repository operations, database persistence, and FIFO waitlist restoration.
+
+## Planned Features
+
+### Admin Management
+
+**Status: Planned — Not Yet Implemented**
+
+- Create, edit, and view events.
+- View participant registrations.
+- Monitor event waitlists.
+- Cancel events.
+
+The Admin feature will be developed after completing the core registration and FIFO waitlist functionality and before Streamlit frontend development.
+
+### Future Development
+
+- Admin role and event management.
+- Streamlit-based graphical user interface.
+- Frontend and backend integration.
+- Complete system integration and testing.
+- Final documentation and GitHub submission.
