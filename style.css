@@ -1,0 +1,1012 @@
+
+/* =========================================================
+   EVENTSLOT — FUTURISTIC NEON COMMAND CENTER
+   Midnight • Electric Blue • Violet • Cyan • Orange
+   ========================================================= */
+
+/* ---------- 1. COLOR SYSTEM ---------- */
+
+:root {
+    --bg: #070b16;
+    --bg-deep: #050812;
+
+    --panel: rgba(14, 22, 40, 0.88);
+    --panel-strong: rgba(17, 28, 49, 0.96);
+    --panel-hover: rgba(26, 42, 69, 0.96);
+
+    --blue: #438bff;
+    --cyan: #39d8ed;
+    --violet: #9b75ff;
+    --orange: #ff8a3d;
+    --orange-light: #ffb16e;
+
+    --text: #f0f4ff;
+    --muted: #9aaac5;
+    --subtle: #647795;
+
+    --border: rgba(107, 151, 216, 0.19);
+    --border-bright: rgba(91, 177, 255, 0.42);
+
+    --success: #45e0a0;
+    --warning: #ffad59;
+    --danger: #ff657d;
+
+    --radius: 12px;
+    --shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+}
+
+
+/* ---------- 2. ANIMATED BACKGROUND ---------- */
+
+.stApp {
+    background-color: var(--bg);
+
+    background-image:
+        radial-gradient(
+            ellipse at 12% 10%,
+            rgba(37, 99, 235, 0.25),
+            transparent 38%
+        ),
+        radial-gradient(
+            ellipse at 85% 15%,
+            rgba(125, 72, 235, 0.22),
+            transparent 38%
+        ),
+        radial-gradient(
+            ellipse at 80% 85%,
+            rgba(255, 110, 45, 0.19),
+            transparent 36%
+        ),
+        radial-gradient(
+            ellipse at 15% 85%,
+            rgba(0, 194, 220, 0.16),
+            transparent 38%
+        );
+
+    background-size: 200% 200%;
+    animation: backgroundFlow 22s ease-in-out infinite alternate;
+
+    color: var(--text);
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+@keyframes backgroundFlow {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 65%;
+    }
+    100% {
+        background-position: 10% 100%;
+    }
+}
+
+html, body, [class*="css"] {
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.stApp header,
+.stApp [data-testid="stHeader"] {
+    background: transparent;
+}
+
+.block-container {
+    max-width: 1320px;
+    padding-top: 2.4rem;
+    padding-bottom: 3rem;
+}
+
+
+/* ---------- 3. SUBTLE GRID OVERLAY ---------- */
+
+.stApp::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(100, 145, 205, 0.025) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(100, 145, 205, 0.025) 1px,
+            transparent 1px
+        );
+
+    background-size: 48px 48px;
+    mask-image: linear-gradient(
+        to bottom,
+        black,
+        transparent 90%
+    );
+}
+
+h1, h2, h3, h4 {
+    color: var(--text);
+    letter-spacing: -0.035em;
+}
+
+p {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+hr {
+    border-color: var(--border);
+    opacity: 0.8;
+    margin: 1.7rem 0;
+}
+
+
+/* ---------- 4. SIDEBAR ---------- */
+
+section[data-testid="stSidebar"] {
+    background: rgba(7, 13, 26, 0.97);
+    border-right: 1px solid rgba(75, 140, 230, 0.25);
+    box-shadow: 8px 0 35px rgba(0, 0, 0, 0.18);
+}
+
+section[data-testid="stSidebar"] > div {
+    padding: 1.5rem 1.1rem;
+}
+
+.sidebar-brand {
+    padding: 15px 12px 26px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+}
+
+.brand-name {
+    font-size: 29px;
+    font-weight: 850;
+    letter-spacing: -1.7px;
+
+    background: linear-gradient(
+        100deg,
+        #ffffff,
+        #65b7ff,
+        #9d80ff,
+        #ff9b54
+    );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brand-subtitle {
+    margin-top: 7px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #7e94b6;
+}
+
+.nav-heading {
+    padding: 7px 12px;
+    margin-bottom: 11px;
+    color: #657c9f;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+section[data-testid="stSidebar"] .stButton button {
+    min-height: 45px;
+    padding: 10px 14px;
+    border-radius: 9px;
+
+    background: transparent;
+    border: 1px solid transparent;
+
+    color: #9bacc7;
+    font-size: 13px;
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+section[data-testid="stSidebar"] .stButton button:hover {
+    background: rgba(51, 107, 177, 0.14);
+    border-color: rgba(76, 157, 255, 0.22);
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
+section[data-testid="stSidebar"] .stButton button[kind="primary"] {
+    background: linear-gradient(
+        110deg,
+        rgba(32, 92, 165, 0.48),
+        rgba(93, 62, 157, 0.4),
+        rgba(166, 87, 43, 0.24)
+    );
+
+    border: 1px solid rgba(87, 166, 255, 0.4);
+    color: #ffffff;
+
+    box-shadow:
+        0 0 18px rgba(55, 130, 255, 0.12),
+        inset 0 0 15px rgba(66, 142, 255, 0.06);
+}
+
+section[data-testid="stSidebar"] .stButton button[kind="primary"]:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 20px rgba(57, 216, 237, 0.15);
+}
+
+.sidebar-footer {
+    margin-top: 65px;
+    padding: 18px 12px;
+    border-top: 1px solid var(--border);
+
+    color: var(--subtle);
+    font-size: 11px;
+    line-height: 2;
+}
+
+.footer-title {
+    color: #e9f1ff;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+/* ---------- 5. PAGE HEADINGS ---------- */
+
+.page-heading {
+    margin-bottom: 32px;
+}
+
+.page-heading .eyebrow,
+.hero .eyebrow {
+    color: var(--cyan);
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 2.6px;
+    margin-bottom: 11px;
+    text-transform: uppercase;
+}
+
+.page-heading h1 {
+    display: inline-block;
+
+    background: linear-gradient(
+        105deg,
+        #ffffff 0%,
+        #76c8ff 28%,
+        #a48aff 57%,
+        #ffad70 85%,
+        #ff803d 100%
+    );
+
+    background-size: 220% auto;
+    animation: titleFlow 8s ease-in-out infinite alternate;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    font-size: 36px;
+    font-weight: 850;
+    line-height: 1.2;
+    margin: 0 0 10px;
+}
+
+@keyframes titleFlow {
+    0% {
+        background-position: 0% center;
+    }
+    100% {
+        background-position: 100% center;
+    }
+}
+
+.page-heading p {
+    max-width: 700px;
+    font-size: 13px;
+    margin: 0;
+}
+
+
+/* ---------- 6. HERO SECTION — COMPACT VERSION ---------- */
+
+.hero {
+    position: relative;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            115deg,
+            rgba(20, 43, 77, 0.88),
+            rgba(35, 29, 72, 0.88),
+            rgba(71, 37, 37, 0.75)
+        );
+
+    border: 1px solid rgba(120, 160, 215, 0.12);
+    border-radius: 13px;
+
+    padding: 25px 32px;
+    margin-bottom: 25px;
+
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    min-height: auto;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    right: -90px;
+    top: -110px;
+
+    background: radial-gradient(
+        circle,
+        rgba(255, 135, 65, 0.23),
+        transparent 70%
+    );
+
+    pointer-events: none;
+    opacity: 0.55;
+}
+
+.hero .eyebrow {
+    color: #69dff0;
+    font-size: 10px;
+    margin-bottom: 7px;
+}
+
+.hero h1 {
+    position: relative;
+    z-index: 1;
+
+    background: linear-gradient(
+        105deg,
+        #ffffff,
+        #91d6ff 28%,
+        #b5a0ff 56%,
+        #ffc08a 82%,
+        #ff853f
+    );
+
+    background-size: 250% auto;
+    animation: titleFlow 8s ease-in-out infinite alternate;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    font-size: clamp(29px, 3vw, 38px);
+    font-weight: 850;
+    line-height: 1.15;
+    letter-spacing: -1.2px;
+    margin: 8px 0 10px;
+}
+
+.hero p {
+    position: relative;
+    z-index: 1;
+    max-width: 660px;
+    color: #bdcce3;
+    font-size: 13px;
+    margin: 0;
+}
+
+
+/* ---------- 7. SECTION HEADINGS ---------- */
+
+.section-header {
+    margin: 30px 0 17px;
+}
+
+.section-header h2 {
+    color: #edf3ff;
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 6px;
+}
+
+.section-header p {
+    color: var(--muted);
+    font-size: 12px;
+    margin: 0;
+}
+
+
+/* ---------- 8. STAT CARDS ---------- */
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+
+    background: linear-gradient(
+        145deg,
+        rgba(20, 34, 57, 0.95),
+        rgba(12, 20, 36, 0.96)
+    );
+
+    border: 1px solid rgba(120, 160, 215, 0.10);
+    border-radius: 12px;
+
+    padding: 21px;
+    min-height: 128px;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transition: all 0.22s ease;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        var(--blue),
+        var(--violet),
+        var(--orange)
+    );
+
+    opacity: 0.45;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(120, 160, 215, 0.23);
+
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.16);
+}
+
+.stat-label {
+    color: #9eafca;
+    font-size: 11px;
+    font-weight: 650;
+    margin-bottom: 12px;
+}
+
+.stat-value {
+    background: linear-gradient(
+        100deg,
+        #ffffff,
+        #8ccfff,
+        #b4a0ff
+    );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    font-size: 31px;
+    font-weight: 850;
+    line-height: 1.1;
+}
+
+.stat-description {
+    color: #7388a7;
+    font-size: 10px;
+    margin-top: 9px;
+}
+
+
+/* ---------- 9. EVENT CARDS ---------- */
+
+.event-card {
+    background: linear-gradient(
+        145deg,
+        rgba(20, 34, 57, 0.95),
+        rgba(11, 19, 34, 0.96)
+    );
+
+    border: 1px solid rgba(120, 160, 215, 0.10);
+    border-radius: 12px;
+
+    padding: 21px;
+    margin-bottom: 15px;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transition: all 0.22s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(120, 160, 215, 0.23);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.16);
+}
+
+.event-card-top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.event-card h3 {
+    color: #f0f4ff;
+    font-size: 17px;
+    font-weight: 750;
+    margin: 0 0 17px;
+}
+
+.event-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+}
+
+.detail-label {
+    color: #8296b5;
+    font-size: 11px;
+}
+
+.detail-value {
+    color: #e4edff;
+    font-size: 11px;
+    font-weight: 650;
+    text-align: right;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.active-badge {
+    background: rgba(69, 224, 160, 0.12);
+    border: 1px solid rgba(69, 224, 160, 0.2);
+    color: var(--success);
+}
+
+.cancelled-badge {
+    background: rgba(130, 150, 180, 0.1);
+    border: 1px solid var(--border);
+    color: #a6b4c8;
+}
+
+
+/* ---------- 10. REQUEST STATUS CARDS ---------- */
+
+.request-status-board {
+    background: linear-gradient(
+        145deg,
+        rgba(19, 32, 53, 0.97),
+        rgba(11, 19, 34, 0.98)
+    );
+
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--warning);
+    border-radius: 11px;
+
+    padding: 21px;
+    margin: 13px 0 17px;
+
+    box-shadow: var(--shadow);
+    transition: all 0.2s ease;
+}
+
+.request-status-board:hover {
+    border-top-color: var(--border-bright);
+    border-right-color: var(--border-bright);
+    border-bottom-color: var(--border-bright);
+}
+
+.request-status-board.waiting {
+    border-left-color: var(--warning);
+}
+
+.request-status-board.accepted {
+    border-left-color: var(--success);
+}
+
+.request-status-board.rejected {
+    border-left-color: var(--danger);
+}
+
+.request-board-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 14px;
+}
+
+.request-board-top h2 {
+    color: #edf3ff;
+    font-size: 18px;
+    font-weight: 800;
+    margin: 5px 0 0;
+}
+
+.request-field-label {
+    color: #7288a9;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 1.4px;
+    margin-bottom: 6px;
+}
+
+.request-field-value {
+    color: #e4edff;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.request-board-description {
+    color: #9eafc9;
+    font-size: 11px;
+    line-height: 1.7;
+    margin-bottom: 17px;
+}
+
+.request-board-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 19px 25px;
+
+    padding-top: 17px;
+    border-top: 1px solid var(--border);
+}
+
+.request-field {
+    min-width: 0;
+}
+
+.request-status-badge {
+    display: inline-block;
+    padding: 7px 11px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.waiting .request-status-badge {
+    background: rgba(255, 173, 89, 0.12);
+    border: 1px solid rgba(255, 173, 89, 0.28);
+    color: var(--warning);
+}
+
+.accepted .request-status-badge {
+    background: rgba(69, 224, 160, 0.12);
+    border: 1px solid rgba(69, 224, 160, 0.28);
+    color: var(--success);
+}
+
+.rejected .request-status-badge {
+    background: rgba(255, 101, 125, 0.12);
+    border: 1px solid rgba(255, 101, 125, 0.28);
+    color: var(--danger);
+}
+
+.request-feedback {
+    margin-top: 18px;
+    padding: 15px;
+
+    background: rgba(5, 12, 25, 0.75);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+
+/* ---------- 11. FORMS AND INPUTS ---------- */
+
+.stTextInput label,
+.stTextArea label,
+.stSelectbox label,
+.stNumberInput label,
+.stTimeInput label,
+.stDateInput label {
+    color: #b8c8e1;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.stTextInput input,
+.stTextArea textarea,
+.stNumberInput input,
+.stTimeInput input,
+.stDateInput input {
+    background: rgba(8, 16, 30, 0.94);
+    border: 1px solid rgba(105, 144, 194, 0.29);
+    border-radius: 8px;
+
+    color: #f0f5ff;
+    font-size: 13px;
+
+    transition: all 0.2s ease;
+}
+
+.stTextInput input:focus,
+.stTextArea textarea:focus,
+.stNumberInput input:focus {
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 0 1px rgba(57, 216, 237, 0.3),
+        0 0 15px rgba(57, 216, 237, 0.08);
+}
+
+.stTextInput input::placeholder,
+.stTextArea textarea::placeholder {
+    color: #627590;
+}
+
+.stSelectbox [data-baseweb="select"] {
+    background: rgba(8, 16, 30, 0.94);
+    border-radius: 8px;
+}
+
+.stTextArea textarea {
+    min-height: 110px;
+}
+
+div[data-testid="stForm"] {
+    background: linear-gradient(
+        145deg,
+        rgba(17, 29, 49, 0.94),
+        rgba(9, 17, 31, 0.97)
+    );
+
+    border: 1px solid var(--border);
+    border-radius: 13px;
+
+    padding: 23px;
+
+    box-shadow: var(--shadow);
+}
+
+div[data-testid="stForm"] strong {
+    color: #edf3ff;
+}
+
+
+/* ---------- 12. BUTTONS ---------- */
+
+.stButton button,
+.stFormSubmitButton button {
+    min-height: 41px;
+    border-radius: 8px;
+
+    font-size: 12px;
+    font-weight: 750;
+
+    transition: all 0.2s ease;
+}
+
+.stButton button[kind="primary"],
+.stFormSubmitButton button[kind="primary"] {
+    background: linear-gradient(
+        105deg,
+        #245ca9,
+        #5949a4,
+        #a75431
+    );
+
+    border: 1px solid rgba(119, 167, 255, 0.5);
+    color: #ffffff;
+
+    box-shadow: 0 4px 16px rgba(54, 104, 194, 0.17);
+}
+
+.stButton button[kind="primary"]:hover,
+.stFormSubmitButton button[kind="primary"]:hover {
+    filter: brightness(1.18);
+    border-color: var(--cyan);
+
+    box-shadow:
+        0 0 19px rgba(57, 216, 237, 0.18),
+        0 5px 20px rgba(55, 110, 210, 0.15);
+
+    transform: translateY(-2px);
+}
+
+.stButton button[kind="secondary"],
+.stFormSubmitButton button[kind="secondary"] {
+    background: rgba(20, 34, 55, 0.9);
+    color: #c4d3e9;
+    border: 1px solid var(--border);
+}
+
+.stButton button[kind="secondary"]:hover,
+.stFormSubmitButton button[kind="secondary"]:hover {
+    background: var(--panel-hover);
+    color: #ffffff;
+    border-color: var(--border-bright);
+}
+
+
+/* ---------- 13. TABS ---------- */
+
+.stTabs [data-baseweb="tab-list"] {
+    gap: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.stTabs [data-baseweb="tab"] {
+    color: #91a4c0;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 13px 5px;
+}
+
+.stTabs [aria-selected="true"] {
+    color: #ffffff;
+}
+
+.stTabs [data-baseweb="tab-highlight"] {
+    background: linear-gradient(
+        90deg,
+        var(--blue),
+        var(--violet),
+        var(--orange)
+    );
+    height: 3px;
+}
+
+.stTabs [data-baseweb="tab-border"] {
+    background: var(--border);
+}
+
+
+/* ---------- 14. EXPANDERS ---------- */
+
+div[data-testid="stExpander"] {
+    background: rgba(15, 25, 43, 0.9);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+div[data-testid="stExpander"]:hover {
+    border-color: var(--border-bright);
+}
+
+.streamlit-expanderHeader {
+    color: #e5edfb;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* ---------- 15. ADMIN PANELS ---------- */
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: rgba(15, 25, 43, 0.9);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 15px;
+}
+
+
+/* ---------- 16. ALERTS ---------- */
+
+div[data-testid="stAlert"] {
+    border-radius: 9px;
+    font-size: 12px;
+    background-color: rgba(18, 31, 51, 0.9);
+}
+
+div[data-testid="stAlert"] p {
+    font-size: 12px;
+}
+
+
+/* ---------- 17. SELECTBOX AND DROPDOWNS ---------- */
+
+div[data-baseweb="popover"] {
+    background: #111d32;
+}
+
+div[data-baseweb="menu"] {
+    background: #111d32;
+}
+
+div[data-baseweb="option"] {
+    color: #e5edfb;
+}
+
+div[data-baseweb="option"]:hover {
+    background: #233b5d;
+}
+
+
+/* ---------- 18. FOOTER ---------- */
+
+.app-footer {
+    margin-top: 55px;
+    padding-top: 19px;
+
+    border-top: 1px solid var(--border);
+
+    color: #6f84a4;
+    font-size: 10px;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.app-footer span {
+    color: #91a4c0;
+}
+
+
+/* ---------- 19. RESPONSIVE ---------- */
+
+@media (max-width: 900px) {
+    .block-container {
+        padding: 1.6rem 1.2rem 2rem;
+    }
+
+    .hero {
+        padding: 22px 20px;
+    }
+
+    .hero h1 {
+        font-size: 29px;
+    }
+
+    .page-heading h1 {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero {
+        padding: 19px 16px;
+    }
+
+    .hero h1 {
+        font-size: 25px;
+    }
+
+    .page-heading h1 {
+        font-size: 27px;
+    }
+
+    .request-board-details {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .request-board-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .app-footer {
+        flex-direction: column;
+    }
+
+    div[data-testid="stForm"] {
+        padding: 15px;
+    }
+}
+
+
+/* ---------- 20. ACCESSIBILITY ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

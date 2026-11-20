@@ -24,7 +24,7 @@ EventSlot is a Python-based event registration application that manages event ca
 
 ## OOP Concepts
 
-The project will demonstrate encapsulation, abstraction, inheritance, and polymorphism.
+The project demonstrates encapsulation, abstraction, inheritance, and polymorphism.
 
 The Repository Pattern separates business logic from data storage.
 
@@ -40,18 +40,18 @@ The Repository Pattern separates business logic from data storage.
 | Day 6 | Slot Management | Completed |
 | Day 7 | FIFO Waitlist Implementation | Completed |
 | Day 8 | SQLite Database, Repository Implementation, Backend Integration, and Testing | Completed |
-| Day 9 | Admin Role and Event Management | Upcoming |
-| Day 10 | Streamlit Frontend Development | Upcoming |
-| Day 11 | Frontend and Backend Connection | Upcoming |
-| Days 12–14 | Integration, Testing, Documentation, and Finalization | Upcoming |
+| Day 9 | Admin Role, Event Management, and Streamlit Frontend Development | In Progress |
+| Day 10 | Frontend and Backend Connection | Upcoming |
+| Day 11 | Integration, Testing, and Documentation | Upcoming |
+| Day 12 | Finalization and GitHub Submission | Upcoming |
 
 ## Current Progress
 
-Completed Day 8 of the EventSlot project.
+Completed the core registration system, SQLite database integration, and backend Admin functionality.
 
 ### RegistrationService
 
-The `RegistrationService` handles participant registration, cancellation, event slot management, and FIFO waitlist processing. It is now integrated with SQLite repositories for persistent data storage.
+The `RegistrationService` handles participant registration, cancellation, event slot management, and FIFO waitlist processing. It is integrated with SQLite repositories for persistent data storage.
 
 ### Implemented Features
 
@@ -64,6 +64,7 @@ The `RegistrationService` handles participant registration, cancellation, event 
 - Releasing occupied slots after registration cancellation.
 - Preventing duplicate cancellation.
 - Maintaining accurate event capacity.
+- Preventing registration for cancelled events.
 
 ### SQLite Database Integration
 
@@ -76,30 +77,46 @@ The `RegistrationService` handles participant registration, cancellation, event 
 - Added persistent registration and cancellation records.
 - Restored registrations, occupied event slots, and FIFO waitlists after service restart.
 - Maintained registration ID sequencing after restart.
-
-### Testing
-
-**All 46 automated unit and integration tests successfully passed.**
-
-Tests cover event management, participant management, registration logic, repository operations, database persistence, and FIFO waitlist restoration.
-
-## Planned Features
+- Added event status persistence and database migration support.
 
 ### Admin Management
 
-**Status: Planned — Not Yet Implemented**
+The `AdminService` provides administrative operations for managing events and monitoring registrations.
 
-- Create, edit, and view events.
-- View participant registrations.
-- Monitor event waitlists.
-- Cancel events.
+Implemented features:
 
-The Admin feature will be developed after completing the core registration and FIFO waitlist functionality and before Streamlit frontend development.
+- Creating new events.
+- Viewing all events.
+- Editing event details.
+- Preventing invalid event capacity updates.
+- Viewing all participant registrations.
+- Viewing event-specific waitlists.
+- Cancelling events.
+- Automatically cancelling active registrations when an event is cancelled.
+- Preventing new registrations for cancelled events.
+
+### Testing
+
+**All 54 automated unit and integration tests successfully passed.**
+
+Tests cover event management, participant management, registration logic, repository operations, database persistence, FIFO waitlist restoration, and Admin functionality.
+
+## Planned Features
+
+### Streamlit Frontend
+
+**Status: In Progress — Day 9**
+
+- Develop a user-friendly graphical interface using Streamlit.
+- Display available events and event details.
+- Allow participants to register for events.
+- Display registration status and waitlist information.
+- Provide an interface for Admin operations.
 
 ### Future Development
 
-- Admin role and event management.
-- Streamlit-based graphical user interface.
-- Frontend and backend integration.
-- Complete system integration and testing.
-- Final documentation and GitHub submission.
+- Complete the Streamlit frontend.
+- Connect the frontend to the backend services.
+- Perform complete system integration and testing.
+- Finalize documentation.
+- Prepare the project for GitHub submission.
