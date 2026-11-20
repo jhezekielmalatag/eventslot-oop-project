@@ -1,36 +1,38 @@
 
+from repositories.database import Database
+from repositories.event_reposity import EventRepository
 from models.event import Event
 
 
 def main():
-    event = Event(
-        event_id=1,
-        name="Python Programming Seminar",
-        location="Computer Laboratory",
-        capacity=3
-    )
+    db = Database()
+    db.create_tables()
 
-    print("=== EventSlot: Event Tests ===")
-    print(event)
+    event_repository = EventRepository(db)
 
-    # Test 1: A new event has all its slots available.
-    assert event.available_slots == 3
-    assert event.is_full is False
-    print("Test 1 passed: Initial capacity")
+    # Retrieve an existing event
+    event = event_repository.get_by_id(2)
 
-    # Test 2: Simulate two participants registering.
-    event.registered_count = 2
-    assert event.available_slots == 1
-    assert event.is_full is False
-    print("Test 2 passed: Remaining slots")
+    if event is None:
+        print("Event not found.")
+        return
 
-    # Test 3: Simulate the event becoming full.
-    event.registered_count = 3
-    assert event.available_slots == 0
-    assert event.is_full is True
-    print("Test 3 passed: Full event")
+    # Update the event details
+    event.name = "Updated OOP Project Presentation"
+    event.location = "Computer Laboratory"
+    event.capacity = 60
 
-    print("\nAll manual tests passed!")
+    # Save the changes using update()
+    result = event_repository.update(event)
+
+    if result:
+        print("Event successfully updated!")
+    else:
+        print("Event update failed.")
+
+    # Display the updated event
+    updated_event = event_repository.get_by_id(2)
+    print(updated_event)
 
 
 if __name__ == "__main__":
