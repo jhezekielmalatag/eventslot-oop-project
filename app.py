@@ -471,11 +471,9 @@ def home_page(event_repository, registration_repository):
                         st.error("Incorrect administrator password.")
 
 
-
 # =========================================
 # MY EVENTS SECTION
 # =========================================
-
 
 def my_events_section(
     participant_repository,
@@ -485,11 +483,18 @@ def my_events_section(
 
     with st.container(key="my_events_section"):
 
+        # DISPLAY CANCELLATION SUCCESS AFTER RERUN
+        if st.session_state.pop("cancellation_success", False):
+            st.success(
+                "Your registration has been cancelled successfully!"
+            )
+
         section_heading(
             "My Events",
             "Retrieve your registrations using your email address and private access code."
         )
 
+        # ACCESS CODE LOOKUP FORM
         with st.form("my_events_lookup_form"):
 
             lookup_email = st.text_input(
@@ -508,31 +513,106 @@ def my_events_section(
                 use_container_width=True
             )
 
-        if not lookup_submitted:
+        # VERIFY PARTICIPANT
+        if lookup_submitted:
+
+            if not lookup_email.strip() or not lookup_code.strip():
+                st.warning(
+                    "Enter both your email address and access code."
+                )
+
+                st.session_state.pop(
+                    "my_events_verified_email", None
+                )
+                st.session_state.pop(
+                    "my_events_verified_code", None
+                )
+                st.session_state.pop(
+                    "pending_cancellation_id", None
+                )
+                return
+
+            participant = (
+                participant_repository.get_by_email_and_access_code(
+                    lookup_email.strip(),
+                    lookup_code.strip().upper()
+                )
+            )
+
+            if participant is None:
+                st.error(
+                    "We couldn't verify those details. "
+                    "Check your email and access code."
+                )
+
+                st.session_state.pop(
+                    "my_events_verified_email", None
+                )
+                st.session_state.pop(
+                    "my_events_verified_code", None
+                )
+                st.session_state.pop(
+                    "pending_cancellation_id", None
+                )
+                return
+
+            st.session_state.my_events_verified_email = (
+                lookup_email.strip()
+            )
+
+            st.session_state.my_events_verified_code = (
+                lookup_code.strip().upper()
+            )
+
+            st.session_state.pop(
+                "pending_cancellation_id", None
+            )
+
+        # RESTORE VERIFIED PARTICIPANT AFTER RERUN
+        verified_email = st.session_state.get(
+            "my_events_verified_email"
+        )
+
+        verified_code = st.session_state.get(
+            "my_events_verified_code"
+        )
+
+        if not verified_email or not verified_code:
             st.caption(
                 "Your access code was shown after your first "
                 "successful registration. Keep it private."
             )
             return
 
-        if not lookup_email.strip() or not lookup_code.strip():
-            st.warning("Enter both your email address and access code.")
-            return
-
-        participant = participant_repository.get_by_email_and_access_code(
-            lookup_email.strip(),
-            lookup_code.strip().upper()
+        participant = (
+            participant_repository.get_by_email_and_access_code(
+                verified_email,
+                verified_code
+            )
         )
 
         if participant is None:
             st.error(
-                "We couldn't verify those details. "
-                "Check your email and access code."
+                "Your session could not be verified. "
+                "Please enter your email and access code again."
+            )
+
+            st.session_state.pop(
+                "my_events_verified_email", None
+            )
+            st.session_state.pop(
+                "my_events_verified_code", None
+            )
+            st.session_state.pop(
+                "pending_cancellation_id", None
             )
             return
 
-        registrations = registration_repository.get_by_participant_id(
-            participant.participant_id
+        # LOAD REGISTRATIONS
+        registrations = (
+            registration_repository.get_by_participant_id(
+                participant.participant_id
+            )
         )
 
         section_heading(
@@ -544,6 +624,7 @@ def my_events_section(
             st.info("You don't have any event registrations yet.")
             return
 
+        # DISPLAY REGISTRATION CARDS
         for registration in registrations:
 
             event = registration.event
@@ -584,7 +665,6 @@ def my_events_section(
                 )
 
                 # PARTICIPANT CANCELLATION
-
                 if status in ("confirmed", "waiting"):
 
                     pending_id = st.session_state.get(
@@ -599,7 +679,9 @@ def my_events_section(
 
                         confirm_col, keep_col = st.columns(2)
 
+                        # CONFIRM CANCELLATION
                         with confirm_col:
+
                             if st.button(
                                 "Yes, Cancel Registration",
                                 key=f"confirm_cancel_{registration_id}",
@@ -617,47 +699,57 @@ def my_events_section(
                                         None
                                     )
 
-                                    st.success(
-                                        "Your registration has been cancelled."
-                                    )
+                                    # SAVE SUCCESS MESSAGE BEFORE RERUN
+                                    st.session_state["cancellation_success"] = True
 
                                     st.rerun()
 
                                 except ValueError as error:
                                     st.error(str(error))
 
+                        # KEEP REGISTRATION
                         with keep_col:
+
                             if st.button(
                                 "Keep Registration",
                                 key=f"keep_registration_{registration_id}",
                                 use_container_width=True
                             ):
+
                                 st.session_state.pop(
                                     "pending_cancellation_id",
                                     None
                                 )
+
                                 st.rerun()
 
                     else:
 
+                        # INITIAL CANCELLATION BUTTON
                         if st.button(
                             "Cancel Reservation",
                             key=f"cancel_reservation_{registration_id}",
                             use_container_width=True
                         ):
+
                             st.session_state.pending_cancellation_id = (
                                 registration_id
                             )
+
                             st.rerun()
 
 
+# =========================================
+# AVAILABLE EVENTS PAGE
+# =========================================
 
 def available_events_page(
     event_repository,
     registration_repository,
     registration_service,
     participant_repository
-    ):
+):
+
     page_heading(
         "EVENTS",
         "Available Events",
@@ -665,24 +757,37 @@ def available_events_page(
     )
 
     selected_event_id = st.session_state.get("selected_event_id")
+
     if selected_event_id is not None:
+
         selected_event = event_repository.get_by_id(selected_event_id)
+
         if selected_event is None or selected_event.status != "active":
             st.session_state.pop("selected_event_id", None)
             selected_event = None
+
         if selected_event is not None:
+
             if st.button("← Back to Events", key="back_to_events"):
                 st.session_state.pop("selected_event_id", None)
                 st.rerun()
+
             show_event_details(
-                selected_event, event_repository,
-                registration_repository, registration_service
+                selected_event,
+                event_repository,
+                registration_repository,
+                registration_service
             )
+
             return
 
-    my_events_tab, browse_tab = st.tabs(["My Events", "Browse Events"])
+    my_events_tab, browse_tab = st.tabs([
+        "My Events",
+        "Browse Events"
+    ])
 
     with my_events_tab:
+
         my_events_section(
             participant_repository,
             registration_repository,
@@ -690,28 +795,48 @@ def available_events_page(
         )
 
     with browse_tab:
+
         events = event_repository.get_all()
-        active_events = [event for event in events if event.status == "active"]
+
+        active_events = [
+            event for event in events
+            if event.status == "active"
+        ]
 
         if not active_events:
             st.info("No active events are available yet.")
+
         else:
+
             columns = st.columns(2)
+
             for index, event in enumerate(active_events):
+
                 with columns[index % 2]:
+
                     event_card(event)
+
                     if st.button(
                         "View Event Details",
                         key=f"view_event_{event.event_id}",
                         use_container_width=True
                     ):
+
                         st.session_state.selected_event_id = event.event_id
                         st.rerun()
 
 
+# =========================================
+# EVENT DETAILS AND REGISTRATION
+# =========================================
+
 def show_event_details(
-    event, event_repository, registration_repository, registration_service
+    event,
+    event_repository,
+    registration_repository,
+    registration_service
 ):
+
     # Refresh event information from the database.
     event = event_repository.get_by_id(event.event_id)
 
@@ -725,26 +850,38 @@ def show_event_details(
         return
 
     registrations = registration_repository.get_by_event(event.event_id)
+
     waiting_count = sum(
         1 for registration in registrations
         if registration.status == "waiting"
     )
 
-    section_heading(event.name, "Event information and registration")
+    section_heading(
+        event.name,
+        "Event information and registration"
+    )
 
     st.write(f"**Location:** {event.location}")
     st.write(f"**Time:** {event.event_time or 'Not specified'}")
+
     st.write(
         f"**Description:** "
         f"{event.description or 'No description provided.'}"
     )
 
-    available = max(event.capacity - event.registered_count, 0)
+    available = max(
+        event.capacity - event.registered_count,
+        0
+    )
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        stat_card("Capacity", event.capacity, "Total available places")
+        stat_card(
+            "Capacity",
+            event.capacity,
+            "Total available places"
+        )
 
     with col2:
         stat_card(
@@ -761,7 +898,6 @@ def show_event_details(
         )
 
     # REGISTRATION RESULT
-
     if st.session_state.get("registration_result_event") == event.event_id:
 
         result = st.session_state.get("registration_result")
@@ -778,13 +914,15 @@ def show_event_details(
             )
 
         access_code = st.session_state.pop(
-            "generated_access_code", None
+            "generated_access_code",
+            None
         )
 
         if access_code:
             st.success(
                 "Your private My Events access code has been generated."
             )
+
             st.code(access_code)
 
             st.warning(
@@ -796,7 +934,6 @@ def show_event_details(
         st.session_state.pop("registration_result_event", None)
 
     # REGISTRATION FORM
-
     section_heading(
         "Join This Event",
         "Enter your details to register for this event."
@@ -825,6 +962,7 @@ def show_event_details(
         if submitted:
 
             try:
+
                 latest_event = event_repository.get_by_id(event.event_id)
 
                 if latest_event is None or latest_event.status != "active":
@@ -838,7 +976,10 @@ def show_event_details(
                 )
 
                 st.session_state.registration_result = registration.status
-                st.session_state.registration_result_event = event.event_id
+
+                st.session_state.registration_result_event = (
+                    event.event_id
+                )
 
                 generated_code = (
                     registration_service.last_generated_access_code
@@ -853,6 +994,7 @@ def show_event_details(
             except ValueError as error:
                 st.error(str(error))
 
+
 # =========================================
 # CREATE EVENT PAGE
 # =========================================
@@ -865,10 +1007,7 @@ def create_request_page(event_request_service):
         "Submit your event proposal and follow its approval status."
     )
 
-    # -------------------------------------
     # APPLICANT REQUEST STATUS
-    # -------------------------------------
-
     applicant_email = st.session_state.get("applicant_email")
 
     if applicant_email:
@@ -885,6 +1024,7 @@ def create_request_page(event_request_service):
         if requests:
             for request in requests:
                 public_request_card(request)
+
         else:
             st.info("You have not submitted any event requests yet.")
 
@@ -911,10 +1051,7 @@ def create_request_page(event_request_service):
 
         st.divider()
 
-    # -------------------------------------
     # NEW EVENT REQUEST FORM
-    # -------------------------------------
-
     section_heading(
         "Submit a New Event",
         "Tell us about yourself and the event you want to organize."
@@ -960,17 +1097,30 @@ def create_request_page(event_request_service):
         )
 
         st.markdown("**Event Time (12-hour format)**")
+
         time_col1, time_col2, time_col3 = st.columns(3)
+
         with time_col1:
             event_hour = st.selectbox(
-                "Hour", [f"{hour:02d}" for hour in range(1, 13)], index=8
+                "Hour",
+                [f"{hour:02d}" for hour in range(1, 13)],
+                index=8
             )
+
         with time_col2:
             event_minute = st.selectbox(
-                "Minute", [f"{minute:02d}" for minute in range(60)], index=0
+                "Minute",
+                [f"{minute:02d}" for minute in range(60)],
+                index=0
             )
+
         with time_col3:
-            event_period = st.selectbox("AM / PM", ["AM", "PM"], index=0)
+            event_period = st.selectbox(
+                "AM / PM",
+                ["AM", "PM"],
+                index=0
+            )
+
         event_time = f"{event_hour}:{event_minute} {event_period}"
 
         purpose = st.text_area(
@@ -1084,11 +1234,13 @@ def admin_request_review(event_request_service):
         )
 
         selected_id = request_options[selected_label]
+
         request = event_request_service.view_request(selected_id)
 
         with st.container(border=True):
 
             st.subheader(request.event_name)
+
             request_status_display(request)
 
             st.write(f"**Applicant:** {request.applicant_name}")
@@ -1130,6 +1282,7 @@ def admin_request_review(event_request_service):
                 if approve_submitted:
 
                     try:
+
                         event = event_request_service.approve_request(
                             request.request_id,
                             capacity,
@@ -1167,6 +1320,7 @@ def admin_request_review(event_request_service):
                 if reject_submitted:
 
                     try:
+
                         event_request_service.reject_request(
                             request.request_id,
                             rejection_feedback
@@ -1181,10 +1335,7 @@ def admin_request_review(event_request_service):
                     except ValueError as error:
                         st.error(str(error))
 
-    # -------------------------------------
     # REVIEWED REQUESTS
-    # -------------------------------------
-
     section_heading(
         "Reviewed Requests",
         "Previously accepted and rejected submissions."
@@ -1229,118 +1380,200 @@ def admin_event_management(admin_service):
         "Manage Published Events",
         "View, edit, and cancel events already published in EventSlot."
     )
+
     events = admin_service.view_all_events()
+
     if not events:
         st.info("No events have been created yet.")
         return
 
     for event in events:
-        with st.expander(f"{event.name} | {event.status.title()} | {event.event_id}"):
+
+        with st.expander(
+            f"{event.name} | {event.status.title()} | {event.event_id}"
+        ):
+
             st.write(f"**Location:** {event.location}")
             st.write(f"**Time:** {event.event_time or 'Not specified'}")
             st.write(f"**Description:** {event.description or 'No description'}")
+
             st.write(
                 f"**Confirmed:** {event.registered_count}/{event.capacity} | "
-                f"**Remaining:** {max(event.capacity - event.registered_count, 0)}"
+                f"**Remaining:** "
+                f"{max(event.capacity - event.registered_count, 0)}"
             )
 
             if event.status == "active":
+
                 with st.form(f"edit_event_{event.event_id}"):
+
                     st.markdown("**Edit Event Details**")
+
                     edited_name = st.text_input(
-                        "Event Name", value=event.name,
+                        "Event Name",
+                        value=event.name,
                         key=f"edit_name_{event.event_id}"
                     )
+
                     edited_location = st.text_input(
-                        "Location", value=event.location,
+                        "Location",
+                        value=event.location,
                         key=f"edit_location_{event.event_id}"
                     )
+
                     edited_capacity = st.number_input(
-                        "Capacity", min_value=1, value=int(event.capacity),
-                        step=1, key=f"edit_capacity_{event.event_id}"
+                        "Capacity",
+                        min_value=1,
+                        value=int(event.capacity),
+                        step=1,
+                        key=f"edit_capacity_{event.event_id}"
                     )
+
                     edited_time = st.text_input(
-                        "Event Time", value=event.event_time,
+                        "Event Time",
+                        value=event.event_time,
                         key=f"edit_time_{event.event_id}"
                     )
+
                     edited_description = st.text_area(
-                        "Description", value=event.description,
+                        "Description",
+                        value=event.description,
                         key=f"edit_description_{event.event_id}"
                     )
+
                     edit_submitted = st.form_submit_button(
-                        "Save Event Changes", use_container_width=True
+                        "Save Event Changes",
+                        use_container_width=True
                     )
+
                     if edit_submitted:
+
                         try:
+
                             admin_service.edit_event(
-                                event.event_id, edited_name, edited_location,
-                                int(edited_capacity), edited_time, edited_description
+                                event.event_id,
+                                edited_name,
+                                edited_location,
+                                int(edited_capacity),
+                                edited_time,
+                                edited_description
                             )
+
                             st.success("Event details updated.")
                             st.rerun()
+
                         except ValueError as error:
                             st.error(str(error))
 
                 if st.button(
-                    "Cancel Event", key=f"cancel_event_{event.event_id}"
+                    "Cancel Event",
+                    key=f"cancel_event_{event.event_id}"
                 ):
+
                     try:
+
                         admin_service.cancel_event(event.event_id)
-                        st.success("Event cancelled and active registrations cancelled.")
+
+                        st.success(
+                            "Event cancelled and active registrations cancelled."
+                        )
+
                         st.rerun()
+
                     except ValueError as error:
                         st.error(str(error))
 
             event_registrations = [
-                r for r in admin_service.view_all_registrations()
-                if r.event.event_id == event.event_id
+                registration
+                for registration in admin_service.view_all_registrations()
+                if registration.event.event_id == event.event_id
             ]
-            confirmed = [r for r in event_registrations if r.status == "confirmed"]
-            waiting = [r for r in event_registrations if r.status == "waiting"]
+
+            confirmed = [
+                registration for registration in event_registrations
+                if registration.status == "confirmed"
+            ]
+
+            waiting = [
+                registration for registration in event_registrations
+                if registration.status == "waiting"
+            ]
+
             st.markdown("**Confirmed Registrations**")
+
             if confirmed:
+
                 for registration in confirmed:
+
                     st.write(
                         f"#{registration.registration_id} — "
                         f"{registration.participant.name} "
                         f"({registration.participant.email})"
                     )
+
             else:
                 st.caption("No confirmed registrations yet.")
 
             st.markdown("**FIFO Waiting List**")
+
             if waiting:
+
                 for position, registration in enumerate(waiting, start=1):
+
                     st.write(
                         f"{position}. {registration.participant.name} "
                         f"({registration.participant.email})"
                     )
+
             else:
                 st.caption("No participants on the waiting list.")
 
 
+# =========================================
+# ADMIN REGISTRATION OVERVIEW
+# =========================================
+
 def admin_registration_overview(admin_service):
+
     section_heading(
         "Registration Management",
         "Review confirmed participants and waiting-list entries across all events."
     )
+
     registrations = admin_service.view_all_registrations()
+
     if not registrations:
         st.info("There are no registrations yet.")
         return
 
-    confirmed = [r for r in registrations if r.status == "confirmed"]
-    waiting = [r for r in registrations if r.status == "waiting"]
-    cancelled = [r for r in registrations if r.status == "cancelled"]
+    confirmed = [
+        registration for registration in registrations
+        if registration.status == "confirmed"
+    ]
+
+    waiting = [
+        registration for registration in registrations
+        if registration.status == "waiting"
+    ]
+
+    cancelled = [
+        registration for registration in registrations
+        if registration.status == "cancelled"
+    ]
+
     c1, c2, c3 = st.columns(3)
+
     with c1:
         stat_card("Confirmed", len(confirmed), "Reserved places")
+
     with c2:
         stat_card("Waiting", len(waiting), "FIFO queue entries")
+
     with c3:
         stat_card("Cancelled", len(cancelled), "Cancelled registrations")
 
     for registration in registrations:
+
         st.write(
             f"**{registration.event.name}** — "
             f"{registration.participant.name} "
