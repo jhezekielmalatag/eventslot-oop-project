@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-EventSlot is a Python-based event registration application that manages event capacity, participant registration, and waitlists.
+EventSlot is a Python-based event registration application that manages event capacity, participant registration, and FIFO waitlists. It provides a Streamlit interface for participants and administrators to interact with the system.
 
 ## Objectives
 
@@ -11,7 +11,8 @@ EventSlot is a Python-based event registration application that manages event ca
 - Prevent duplicate registrations.
 - Add participants to a FIFO waitlist when an event is full.
 - Promote the next eligible participant when a slot becomes available.
-- Store event and registration information.
+- Store event and registration information using SQLite.
+- Provide an interface for participants and administrators to manage event activities.
 
 ## Technologies
 
@@ -24,9 +25,14 @@ EventSlot is a Python-based event registration application that manages event ca
 
 ## OOP Concepts
 
-The project demonstrates encapsulation, abstraction, inheritance, and polymorphism.
+The project demonstrates the following Object-Oriented Programming concepts:
 
-The Repository Pattern separates business logic from data storage.
+- **Encapsulation** — Organizing data and related operations within classes.
+- **Abstraction** — Hiding implementation details and exposing necessary operations.
+- **Inheritance** — Reusing and extending class functionality where applicable.
+- **Polymorphism** — Supporting different implementations of common operations where applicable.
+
+The Repository Pattern separates business logic from data storage, improving modularity and maintainability.
 
 ## Project Status
 
@@ -40,14 +46,14 @@ The Repository Pattern separates business logic from data storage.
 | Day 6 | Slot Management | Completed |
 | Day 7 | FIFO Waitlist Implementation | Completed |
 | Day 8 | SQLite Database, Repository Implementation, Backend Integration, and Testing | Completed |
-| Day 9 | Admin Role, Event Management, and Streamlit Frontend Development | In Progress |
-| Day 10 | Frontend and Backend Connection | Upcoming |
-| Day 11 | Integration, Testing, and Documentation | Upcoming |
-| Day 12 | Finalization and GitHub Submission | Upcoming |
+| Day 9 | Admin Role and Event Management | Completed |
+| Day 10 | Streamlit Frontend Development and Backend Connection | Completed |
+| Day 11 | Integration Testing and Documentation | In Progress |
+| Day 12 | Finalization and GitHub Submission | In Progress |
 
 ## Current Progress
 
-Completed the core registration system, SQLite database integration, and backend Admin functionality.
+The core registration system, SQLite database integration, backend Admin functionality, and Streamlit frontend have been implemented.
 
 ### RegistrationService
 
@@ -62,9 +68,10 @@ The `RegistrationService` handles participant registration, cancellation, event 
 - Automatically promoting the first waiting participant when a confirmed registration is cancelled.
 - Removing cancelled waiting participants from the waitlist.
 - Releasing occupied slots after registration cancellation.
-- Preventing duplicate cancellation.
+- Preventing duplicate registrations and cancellations.
 - Maintaining accurate event capacity.
 - Preventing registration for cancelled events.
+- Handling concurrent registration attempts to prevent overbooking.
 
 ### SQLite Database Integration
 
@@ -89,34 +96,52 @@ Implemented features:
 - Viewing all events.
 - Editing event details.
 - Preventing invalid event capacity updates.
-- Viewing all participant registrations.
+- Viewing participant registrations.
 - Viewing event-specific waitlists.
 - Cancelling events.
 - Automatically cancelling active registrations when an event is cancelled.
 - Preventing new registrations for cancelled events.
 
-### Testing
-
-**All 54 automated unit and integration tests successfully passed.**
-
-Tests cover event management, participant management, registration logic, repository operations, database persistence, FIFO waitlist restoration, and Admin functionality.
-
-## Planned Features
-
 ### Streamlit Frontend
 
-**Status: In Progress — Day 9**
+The Streamlit frontend connects the application's user interface to its backend services.
 
-- Develop a user-friendly graphical interface using Streamlit.
-- Display available events and event details.
-- Allow participants to register for events.
-- Display registration status and waitlist information.
-- Provide an interface for Admin operations.
+Implemented features:
+
+- Browsing published events and viewing event details.
+- Registering participants through the interface.
+- Displaying registration results and statuses.
+- Providing a My Events section for participants.
+- Retrieving personal registrations using an email address and private access code.
+- Providing administrative event management.
+- Displaying participant registrations and waitlists.
+- Supporting event cancellation and management through the Admin interface.
+- Applying a customized interface with a dark visual theme.
+
+### Testing
+
+**All 71 automated unit and integration tests successfully passed in the latest confirmed test run.**
+
+Tests cover event management, participant management, registration logic, repository operations, database persistence, FIFO waitlist restoration, Admin functionality, and concurrent registration handling.
+
+## Planned Features and Improvements
+
+### Documentation and Finalization
+
+**Status: In Progress — Day 11–12**
+
+- Review and finalize project documentation.
+- Verify the README and repository contents.
+- Perform final application checks.
+- Prepare the project for submission.
 
 ### Future Development
 
-- Complete the Streamlit frontend.
-- Connect the frontend to the backend services.
-- Perform complete system integration and testing.
-- Finalize documentation.
-- Prepare the project for GitHub submission.
+- Deploy the application online using Render.
+- Configure persistent database storage for online use.
+- Continue improving application security and usability.
+
+## Author
+
+**John Hezekiel Malatag**  
+BS Computer Science — 2nd Year

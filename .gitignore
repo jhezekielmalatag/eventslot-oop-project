@@ -14,6 +14,7 @@ venv/
 
 # Secrets
 .env
+.streamlit/secrets.toml
 
 # Editor and OS files
 .vscode/

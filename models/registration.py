@@ -7,7 +7,7 @@ class Registration:
 
     def cancel(self):
         self.status = "cancelled"
-        
+
     def confirm(self):
         self.status = "confirmed"
 
