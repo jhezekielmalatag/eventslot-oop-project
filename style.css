@@ -830,6 +830,26 @@ div[data-testid="stForm"] strong {
 }
 
 
+/* ---------- 12A. CANCEL RESERVATION — GITHUB DANGER BUTTON ---------- */
+
+[class*="st-key-cancel_"] button {
+    background: rgba(218, 54, 51, 0.10) !important;
+    color: #ff6b6b !important;
+    border: 1px solid #da3633 !important;
+    border-radius: 8px !important;
+    font-weight: 750 !important;
+    transition: all 0.2s ease !important;
+}
+
+[class*="st-key-cancel_"] button:hover {
+    background: #da3633 !important;
+    color: #ffffff !important;
+    border-color: #f85149 !important;
+    box-shadow: 0 0 15px rgba(218, 54, 51, 0.25) !important;
+    transform: translateY(-1px);
+}
+
+
 /* ---------- 13. TABS ---------- */
 
 .stTabs [data-baseweb="tab-list"] {
@@ -1009,4 +1029,89 @@ div[data-baseweb="option"]:hover {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+
+/* =========================================
+   EVENTSLOT - MY EVENTS DARK FORM
+========================================= */
+
+.st-key-my_events_section input {
+    background-color: #111827 !important;
+    color: #F1F5F9 !important;
+    border: 1px solid #334155 !important;
+    border-radius: 12px !important;
+    caret-color: #38BDF8 !important;
+    box-shadow: none !important;
+}
+
+/* Input placeholder */
+.st-key-my_events_section input::placeholder {
+    color: #94A3B8 !important;
+    opacity: 1 !important;
+}
+
+/* Input focus */
+.st-key-my_events_section input:focus {
+    border-color: #38BDF8 !important;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15) !important;
+}
+
+/* Password visibility button */
+.st-key-my_events_section [data-testid="stInputRootElement"] button {
+    background-color: #111827 !important;
+    color: #CBD5E1 !important;
+    border: 1px solid #334155 !important;
+    border-left: none !important;
+}
+
+/* My Events submit button */
+.st-key-my_events_section [data-testid="stFormSubmitButton"] button {
+    background: linear-gradient(
+        135deg,
+        #1E3A8A,
+        #312E81
+    ) !important;
+
+    color: #F8FAFC !important;
+    border: 1px solid #3B82F6 !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    transition: all 0.25s ease !important;
+}
+
+/* Button hover */
+.st-key-my_events_section [data-testid="stFormSubmitButton"] button:hover {
+    background: linear-gradient(
+        135deg,
+        #2563EB,
+        #6D28D9
+    ) !important;
+
+    border-color: #60A5FA !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Button text */
+.st-key-my_events_section [data-testid="stFormSubmitButton"] button p {
+    color: #F8FAFC !important;
+}
+
+/* ---------- CONFIRM CANCELLATION — GITHUB DANGER BUTTON ---------- */
+
+[class*="st-key-confirm_cancel_"] button {
+    background: rgba(218, 54, 51, 0.10) !important;
+    color: #ff6b6b !important;
+    border: 1px solid #da3633 !important;
+    border-radius: 8px !important;
+    font-weight: 750 !important;
+    transition: all 0.2s ease !important;
+}
+
+[class*="st-key-confirm_cancel_"] button:hover {
+    background: #da3633 !important;
+    color: #ffffff !important;
+    border-color: #f85149 !important;
+    box-shadow: 0 0 15px rgba(218, 54, 51, 0.25) !important;
+    transform: translateY(-1px);
 }
