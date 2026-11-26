@@ -471,77 +471,186 @@ def home_page(event_repository, registration_repository):
                         st.error("Incorrect administrator password.")
 
 
+
 # =========================================
-# EVENTS PAGE
+# MY EVENTS SECTION
 # =========================================
 
-def my_events_section(participant_repository, registration_repository):
-    section_heading(
-        "My Events",
-        "Retrieve your registrations using your email address and private access code."
-    )
 
-    with st.form("my_events_lookup_form"):
-        lookup_email = st.text_input(
-            "Email Address", placeholder="The email used when registering"
-        )
-        lookup_code = st.text_input(
-    "Private Access Code",
-    placeholder="Enter your 8-character access code",
-    type="password"
-    )
-        lookup_submitted = st.form_submit_button(
-            "View My Events", use_container_width=True
+def my_events_section(
+    participant_repository,
+    registration_repository,
+    registration_service
+):
+
+    with st.container(key="my_events_section"):
+
+        section_heading(
+            "My Events",
+            "Retrieve your registrations using your email address and private access code."
         )
 
-    if not lookup_submitted:
-        st.caption("Your access code was shown after your first successful registration. Keep it private.")
-        return
+        with st.form("my_events_lookup_form"):
 
-    if not lookup_email.strip() or not lookup_code.strip():
-        st.warning("Enter both your email address and access code.")
-        return
+            lookup_email = st.text_input(
+                "Email Address",
+                placeholder="The email used when registering"
+            )
 
-    participant = participant_repository.get_by_email_and_access_code(
-    lookup_email.strip(),
-    lookup_code.strip().upper()
-    )
+            lookup_code = st.text_input(
+                "Private Access Code",
+                placeholder="Enter your 8-character access code",
+                type="password"
+            )
 
-    if participant is None:
-        st.error("We couldn't verify those details. Check your email and access code.")
-        return
+            lookup_submitted = st.form_submit_button(
+                "View My Events",
+                use_container_width=True
+            )
 
-    registrations = registration_repository.get_by_participant_id(
-        participant.participant_id
-    )
+        if not lookup_submitted:
+            st.caption(
+                "Your access code was shown after your first "
+                "successful registration. Keep it private."
+            )
+            return
 
-    section_heading(
-        f"Welcome, {participant.name}",
-        "Your latest registration records are shown below."
-    )
+        if not lookup_email.strip() or not lookup_code.strip():
+            st.warning("Enter both your email address and access code.")
+            return
 
-    if not registrations:
-        st.info("You don't have any event registrations yet.")
-        return
+        participant = participant_repository.get_by_email_and_access_code(
+            lookup_email.strip(),
+            lookup_code.strip().upper()
+        )
 
-    for registration in registrations:
-        event = registration.event
-        status = registration.status.lower()
+        if participant is None:
+            st.error(
+                "We couldn't verify those details. "
+                "Check your email and access code."
+            )
+            return
 
-        with st.container(border=True):
-            st.subheader(event.name)
-            if status == "confirmed":
-                st.success("Confirmed — your place is reserved.")
-            elif status == "waiting":
-                st.warning("Waitlisted — you'll be promoted when a place becomes available.")
-            elif status == "cancelled":
-                st.error("Cancelled")
-            else:
-                st.info(status.title())
+        registrations = registration_repository.get_by_participant_id(
+            participant.participant_id
+        )
 
-            st.write(f"**Location:** {event.location}")
-            st.write(f"**Time:** {event.event_time or 'Not specified'}")
-            st.write(f"**Description:** {event.description or 'No description provided.'}")
+        section_heading(
+            f"Welcome, {participant.name}",
+            "Your latest registration records are shown below."
+        )
+
+        if not registrations:
+            st.info("You don't have any event registrations yet.")
+            return
+
+        for registration in registrations:
+
+            event = registration.event
+            status = registration.status.lower()
+            registration_id = registration.registration_id
+
+            with st.container(border=True):
+
+                st.subheader(event.name)
+
+                if status == "confirmed":
+                    st.success(
+                        "Confirmed — your place is reserved."
+                    )
+
+                elif status == "waiting":
+                    st.warning(
+                        "Waitlisted — you'll be promoted "
+                        "when a place becomes available."
+                    )
+
+                elif status == "cancelled":
+                    st.error("Cancelled")
+
+                else:
+                    st.info(status.title())
+
+                st.write(f"**Location:** {event.location}")
+
+                st.write(
+                    f"**Time:** "
+                    f"{event.event_time or 'Not specified'}"
+                )
+
+                st.write(
+                    f"**Description:** "
+                    f"{event.description or 'No description provided.'}"
+                )
+
+                # PARTICIPANT CANCELLATION
+
+                if status in ("confirmed", "waiting"):
+
+                    pending_id = st.session_state.get(
+                        "pending_cancellation_id"
+                    )
+
+                    if pending_id == registration_id:
+
+                        st.warning(
+                            "Are you sure you want to cancel this registration?"
+                        )
+
+                        confirm_col, keep_col = st.columns(2)
+
+                        with confirm_col:
+                            if st.button(
+                                "Yes, Cancel Registration",
+                                key=f"confirm_cancel_{registration_id}",
+                                type="primary",
+                                use_container_width=True
+                            ):
+
+                                try:
+                                    registration_service.cancel_registration(
+                                        registration
+                                    )
+
+                                    st.session_state.pop(
+                                        "pending_cancellation_id",
+                                        None
+                                    )
+
+                                    st.success(
+                                        "Your registration has been cancelled."
+                                    )
+
+                                    st.rerun()
+
+                                except ValueError as error:
+                                    st.error(str(error))
+
+                        with keep_col:
+                            if st.button(
+                                "Keep Registration",
+                                key=f"keep_registration_{registration_id}",
+                                use_container_width=True
+                            ):
+                                st.session_state.pop(
+                                    "pending_cancellation_id",
+                                    None
+                                )
+                                st.rerun()
+
+                    else:
+
+                        if st.button(
+                            "Cancel Reservation",
+                            key=f"cancel_reservation_{registration_id}",
+                            use_container_width=True
+                        ):
+                            st.session_state.pending_cancellation_id = (
+                                registration_id
+                            )
+                            st.rerun()
+
+
 
 def available_events_page(
     event_repository,
@@ -574,7 +683,11 @@ def available_events_page(
     my_events_tab, browse_tab = st.tabs(["My Events", "Browse Events"])
 
     with my_events_tab:
-        my_events_section(participant_repository, registration_repository)
+        my_events_section(
+            participant_repository,
+            registration_repository,
+            registration_service
+        )
 
     with browse_tab:
         events = event_repository.get_all()

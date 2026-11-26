@@ -191,35 +191,82 @@ class RegistrationService:
         return registration
 
     def cancel_registration(self, registration):
-        if registration.status == "cancelled":
+        registration_id = registration.registration_id
+
+        # Database-backed cancellation.
+        if self.registration_repository and self.event_repository:
+            self._load_saved_registrations()
+
+            target = next(
+                (
+                    item for item in self.registrations
+                    if item.registration_id == registration_id
+                ),
+                None
+            )
+
+            if target is None:
+                raise ValueError("Registration not found.")
+
+            event = self.event_repository.get_by_id(
+                target.event.event_id
+            )
+
+            if event is None:
+                raise ValueError("Event not found.")
+
+            target.event = event
+
+        else:
+            # In-memory cancellation.
+            target = next(
+                (
+                    item for item in self.registrations
+                    if item.registration_id == registration_id
+                ),
+                registration
+            )
+
+            event = target.event
+
+        if target.status == "cancelled":
             raise ValueError("This registration is already cancelled.")
 
-        waitlist = self._get_waitlist(registration.event)
+        waitlist = self._get_waitlist(event)
 
-        if registration.status == "waiting":
-            if registration in waitlist:
-                waitlist.remove(registration)
+        # Cancel a waiting registration without releasing a slot.
+        if target.status == "waiting":
+            self.waitlists[event.event_id] = type(waitlist)(
+                item for item in waitlist
+                if item.registration_id != registration_id
+            )
 
-            registration.cancel()
+            target.cancel()
 
             if self.registration_repository:
-                self.registration_repository.save(registration)
+                self.registration_repository.save(target)
 
             return
 
-        registration.event.release_slot()
-        registration.cancel()
+        if target.status != "confirmed":
+            raise ValueError("Invalid registration status.")
+
+        # Release the occupied slot.
+        event.release_slot()
+        target.cancel()
 
         if self.registration_repository:
-            self.registration_repository.save(registration)
+            self.registration_repository.save(target)
 
+        # Promote the first participant in the FIFO waitlist.
         if waitlist:
             next_registration = waitlist.popleft()
             next_registration.confirm()
-            registration.event.occupy_slot()
 
             if self.registration_repository:
                 self.registration_repository.save(next_registration)
+            else:
+                event.occupy_slot()
 
     def view_all_registrations(self):
         return (
